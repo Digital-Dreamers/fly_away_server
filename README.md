@@ -33,3 +33,22 @@
     - Seat No
     - Class
 - Flight Model 
+    - Flight No
+    - Schedules
+    - Departure
+    - Destination
+    - Departing Date-Time
+    - Arrival Date-time
+    - No of seats
+- Seats Model
+    - Flight No
+    - Seat Number
+    - Available
+
+
+### Technologies
+ - NodeJS
+ - Express
+ - MongoDB | Mongoose ODM
+ - Middle
+    - Cors
