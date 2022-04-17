@@ -10,7 +10,7 @@ app.use(express.json())
 
 
 // Controllers
-// app.use('/admin', require('./controllers/admin_controller'));
+app.use('/admin', require('./controllers/admin_controller'));
 
 const costumerController = require('./controllers/customer_controller')
 app.use('/customers', costumerController)
