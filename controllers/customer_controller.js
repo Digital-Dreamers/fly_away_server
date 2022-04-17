@@ -1,5 +1,5 @@
 const customer = require('express').Router()
-const db = require('../models')
+// const db = require('../models')
 
 // Search Flights GET
 customer.get('/search',async (req, res)  => {
@@ -28,21 +28,51 @@ customer.post('/book', async (req, res) => {
     }
 })
 
-// Update Flights PUT and reservation
-customer.get('/update-flight', async (req,res) =>{
+// Update Records and flights all affect reservation Model
+// reservation info GET req.
+customer.get('/reservation', async (req,res) =>{
     try {
         res.status(200).json({
-            message: 'Information about'
+            message: 'Information about Reservations'
         })
     } catch (error) {
         
     }
 })
 
+// Handles passenger information update
+customer.put('/update-passenger', async (req, res) => {
+    try {
+        res.status(200).json({
+            message: 'Passenger info updated',
+            updatedFlight: 'Updated passenger object'
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error
+        })
+    }
+})
+
+// Handles seat information update
+customer.put('/update-seat', async (req, res) => {
+    try {
+        res.status(200).json({
+            message: 'Seat updated',
+            updatedFlight: 'Updated seat object'
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error
+        })
+    }
+})
+
+// Handles flight information update
 customer.put('/update-flight', async (req, res) => {
     try {
         res.status(200).json({
-            message: 'flight updated',
+            message: 'Flight updated',
             updatedFlight: 'Updated flight object'
         })
     } catch (error) {
@@ -53,7 +83,7 @@ customer.put('/update-flight', async (req, res) => {
 })
 
 // Cancel Flights DELETE(reservation) PUT(Seat)
-customer.delete('/delete', async (req, res) => {
+customer.delete('/cancellation', async (req, res) => {
     try {
         res.status(200).json({
             message: 'Flight Canceled'

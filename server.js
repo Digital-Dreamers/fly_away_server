@@ -10,7 +10,9 @@ app.use(express.json())
 
 
 // Controllers
-const costumerController = require('./controllers/costumer_controller')
+// app.use('/admin', require('./controllers/admin_controller'));
+
+const costumerController = require('./controllers/customer_controller')
 app.use('/customers', costumerController)
 
 // Root
