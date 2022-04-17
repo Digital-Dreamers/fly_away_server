@@ -10,6 +10,8 @@ app.use(express.json())
 
 
 // Controllers
+const costumerController = require('./controllers/costumer_controller')
+app.use('/customers', costumerController)
 
 // Root
 app.get('*', (req, res) => {
