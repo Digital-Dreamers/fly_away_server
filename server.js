@@ -1,15 +1,15 @@
 // Import Dependencies
-const express = require('express');
+const express = require('express')
 const app = express();
-require('dotenv').config();
-const portNumber = process.env.PORT;
+require('dotenv').config()
+const portNumber = process.env.PORT
 
 // Middleware
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
 // Controllers
-app.use('/admin', require('./controllers/admin_controller'));
+app.use('/admin', require('./controllers/admin_controller'))
 
 // Root
 app.get('*', (req, res) => {
