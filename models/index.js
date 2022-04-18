@@ -11,7 +11,7 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch(error => console.log(error));
 
 // Models to export
-module.exports.Passenger = require('./passenger')
-module.exports.Reservation = require('./reservation')
-module.exports.Flight = require('./flight')
-module.exports.Seat = require('./seat')
+module.exports.Passenger = require('./Passenger')
+module.exports.Reservation = require('./Reservation')
+module.exports.Flight = require('./Flight')
+module.exports.Seat = require('./Seat')
