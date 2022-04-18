@@ -35,4 +35,5 @@ const passengerSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model ('Passenger', passengerSchema)
+const Passenger = mongoose.model ('Passenger', passengerSchema)
+module.exports = Passenger
