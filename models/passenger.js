@@ -35,5 +35,6 @@ const passengerSchema = new mongoose.Schema({
     }
 })
 
+
 const Passenger = mongoose.model ('Passenger', passengerSchema)
 module.exports = Passenger
