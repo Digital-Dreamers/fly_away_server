@@ -1,37 +1,35 @@
 const mongoose = require('mongoose')
 
 const passengerSchema = new mongoose.Schema({
-  name: {
-    firstName: {
-      type: String,
-      required: true,
-    },
-    lastName: {
-      type: String,
-      required: true,
-    },
+  firstName: {
+    type: String,
+    required: true,
   },
+  lastName: {
+    type: String,
+    required: true,
+  },
+
   age: {
     type: Number,
     required: true,
   },
-  houseNumber: {
-    type: Number,
-  },
-  streetName: {
+
+  address: {
     type: String,
+    required: true,
   },
   city: {
     type: String,
-    default: 'Anytown',
+    required: true,
   },
   state: {
     type: String,
-    default: 'USA',
+    required: true,
   },
   reservationNumber: {
     type: Number,
-    required: true,
+    required: false,
   },
 })
 
