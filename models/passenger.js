@@ -1,40 +1,39 @@
 const mongoose = require('mongoose')
 
 const passengerSchema = new mongoose.Schema({
-    name: {
-        firstName: {
-            type: String,
-            required: true
-        }, lastName: {
-            type: String,
-            required: true
-        }
+  name: {
+    firstName: {
+      type: String,
+      required: true,
     },
-    age: {
-        type: Number,
-        required: true
+    lastName: {
+      type: String,
+      required: true,
     },
-    houseNumber:{
-        type: Number
-    },
-    streetName:{
-        type: String
-    },
-    city: {
-        type: String,
-        default: 'Anytown'
-    },
-    state: {
-        type: String,
-        default: 'USA'
-    },
-    reservationNumber: {
-        type: Number,
-        required : true
-
-    }
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  houseNumber: {
+    type: Number,
+  },
+  streetName: {
+    type: String,
+  },
+  city: {
+    type: String,
+    default: 'Anytown',
+  },
+  state: {
+    type: String,
+    default: 'USA',
+  },
+  reservationNumber: {
+    type: Number,
+    required: true,
+  },
 })
 
-
-const Passenger = mongoose.model ('Passenger', passengerSchema)
+const Passenger = mongoose.model('Passenger', passengerSchema)
 module.exports = Passenger
