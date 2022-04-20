@@ -1,11 +1,14 @@
 const customer = require('express').Router()
-// const db = require('../models')
+const db = require('../models')
+const { Flight, Passenger, Reservation, Seat } = db
 
 // Search Flights GET
 customer.get('/search',async (req, res)  => {
     try {
+        const flights = await Flight.find()
         res.status(200).json({
-            message: "Search results will be here"
+            message: "Search results will be here",
+            flights: flights
         })
     } catch (error) {
         res.status(500).json({
@@ -70,10 +73,40 @@ customer.put('/update-seat', async (req, res) => {
 
 // Handles flight information update
 customer.put('/update-flight', async (req, res) => {
+    // req.body ={flightNo, newFlightNo, seatNo,newSeatNo}
     try {
+        // parsing data received form client
+        const { flightNo, newFlightNo, seatNo, newSeatNo, reservationId } = req.body
+        
+        // updating Seats
+        const currentSeat = await Seat.findOne({flightnumber: flightNo, seatnumber: seatNo})
+        currentSeat.available = true
+        currentSeat.save()
+
+        const newSeat = await Seat.findOne({flightnumber: newFlightNo, seatnumber: newSeatNo})
+        newSeat.available = false
+        currentSeat.save()
+
+        // Updating Flights
+        const currentFlight = await Flight.findOne({ flightNumber: flightNo})
+        currentFlight.totalSeats = currentFlight.totalSeats + 1
+        currentFlight.save()
+
+        const newFlight = await Flight.findOne({flightNumber: newFlightNo })
+        newFlight.totalSeats = currentFlight.totalSeats - 1
+        newFlight.save()
+
+        // updating Reservation
+        const reservation = await Reservation.findById(reservationId)
+        reservation.flightNumber = newFlightNo
+        reservation.seatNumber = newSeatNo
+        reservation.save()
+
         res.status(200).json({
             message: 'Flight updated',
-            updatedFlight: 'Updated flight object'
+            updatedFlight: newFlight,
+            updatedSeat: newSeat,
+            updatedRes: reservation
         })
     } catch (error) {
         res.status(500).json({
