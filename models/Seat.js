@@ -2,11 +2,11 @@ const mongoose = require('mongoose')
 
 // Seat Schema
 const seatSchema = new mongoose.Schema({
-  flightnumber: {
+  flightNumber: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Flight',
   },
-  seatnumber: {
+  seatNumber: {
     type: String,
     required: true,
   },
@@ -15,13 +15,13 @@ const seatSchema = new mongoose.Schema({
     default: false,
     required: true,
   },
-  seatclass: {
+  seatClass: {
     type: String,
     required: true,
   },
   charge: {
     type: Number,
-    requried: true,
+    required: true,
   },
 })
 
