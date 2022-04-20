@@ -1,12 +1,28 @@
 const customer = require('express').Router()
-// const db = require('../models')
+const db = require('../models')
+const { Flight, Passenger, Reservation, Seat } = db
 
 // Search Flights GET
-customer.get('/search',async (req, res)  => {
+customer.get('/search', async (req, res) => {
     try {
-        res.status(200).json({
-            message: "Search results will be here"
-        })
+        const { departure, destination, departureDate, numberOfSeat } = req.body
+
+        const flights = await Flight.find({
+            departure,
+            destination,
+            departureDate,
+        }).where('totalSeats').gte(numberOfSeat)
+
+        if (flights.length > 0) {
+            res.status(200).json({
+                message: "Flights Found",
+                flights: flights
+            })
+        } else {
+            res.status(404).json({
+                message: "No Flights Found"
+            })
+        }
     } catch (error) {
         res.status(500).json({
             message: error
@@ -30,13 +46,13 @@ customer.post('/book', async (req, res) => {
 
 // Update Records and flights all affect reservation Model
 // reservation info GET req.
-customer.get('/reservation', async (req,res) =>{
+customer.get('/reservation', async (req, res) => {
     try {
         res.status(200).json({
             message: 'Information about Reservations'
         })
     } catch (error) {
-        
+
     }
 })
 
@@ -95,6 +111,5 @@ customer.delete('/cancellation', async (req, res) => {
     }
 })
 
-// export module
 
 module.exports = customer;
