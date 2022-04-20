@@ -12,7 +12,7 @@ const reservationSchema = new mongoose.Schema({
   },
   passenger: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Passeger',
+    ref: 'Passenger',
     required: true,
   },
 })
