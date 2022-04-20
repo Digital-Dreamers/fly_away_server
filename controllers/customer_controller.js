@@ -3,17 +3,17 @@ const db = require('../models')
 const { Flight, Passenger, Reservation, Seat } = db
 
 // Search Flights GET
-customer.get('/search',async (req, res)  => {
+customer.get('/search', async (req, res) => {
     try {
-        const {departure, destination, departureDate, numberSeat } = req.body
+        const { departure, destination, departureDate, numberOfSeat } = req.body
 
         const flights = await Flight.find({
-            'departure': departure,
-            'destination': destination,
-            'departureDate': departureDate,
-        }).where('totalSeats').gte(numberSeat)
+            departure,
+            destination,
+            departureDate,
+        }).where('totalSeats').gte(numberOfSeat)
 
-        if(flights.length > 0){
+        if (flights.length > 0) {
             res.status(200).json({
                 message: "Flights Found",
                 flights: flights
@@ -46,13 +46,13 @@ customer.post('/book', async (req, res) => {
 
 // Update Records and flights all affect reservation Model
 // reservation info GET req.
-customer.get('/reservation', async (req,res) =>{
+customer.get('/reservation', async (req, res) => {
     try {
         res.status(200).json({
             message: 'Information about Reservations'
         })
     } catch (error) {
-        
+
     }
 })
 
@@ -86,46 +86,10 @@ customer.put('/update-seat', async (req, res) => {
 
 // Handles flight information update
 customer.put('/update-flight', async (req, res) => {
-    // req.body ={flightNo, newFlightNo, seatNo,newSeatNo}
     try {
-        // parsing data received form client
-        const { reservationId, flightNo, newFlightNo, seatNo, newSeatNo } = req.body
-        console.log(flightNo, seatNo)
-        
-        // updating Seats
-        const currentSeat = await Seat.findOne({flightNumber: flightNo, seatnumber: seatNo})
-        console.log(currentSeat)
-        currentSeat.available = true
-        await currentSeat.save()
-
-        const newSeat = await Seat.findOne({flightNumber: newFlightNo, seatnumber: newSeatNo})
-        console.log(newSeat)
-        newSeat.available = false
-        await currentSeat.save()
-
-        // Updating Flights
-        const currentFlight = await Flight.findById(flightNo)
-        console.log(currentFlight)
-        currentFlight.totalSeats = currentFlight.totalSeats + 1
-        await currentFlight.save()
-
-        const newFlight = await Flight.findById(newflightNo)
-        console.log(newFlight)
-        newFlight.totalSeats = currentFlight.totalSeats - 1
-        await newFlight.save()
-
-        // updating Reservation
-        const reservation = await Reservation.findById(reservationId)
-        console.log(reservation)
-        reservation.flightNumber = newFlightNo
-        reservation.seatNumber = newSeatNo
-        await reservation.save()
-
         res.status(200).json({
             message: 'Flight updated',
-            // updatedFlight: newFlight,
-            // updatedSeat: newSeat,
-            // updatedRes: reservation
+            updatedFlight: 'Updated flight object'
         })
     } catch (error) {
         res.status(500).json({
