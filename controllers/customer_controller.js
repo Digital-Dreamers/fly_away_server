@@ -5,11 +5,24 @@ const { Flight, Passenger, Reservation, Seat } = db
 // Search Flights GET
 customer.get('/search',async (req, res)  => {
     try {
-        const flights = await Flight.find()
-        res.status(200).json({
-            message: "Search results will be here",
-            flights: flights
-        })
+        const {departure, destination, departureDate, numberSeat } = req.body
+
+        const flights = await Flight.find({
+            'departure': departure,
+            'destination': destination,
+            'departureDate': departureDate,
+        }).where('totalSeats').gte(numberSeat)
+
+        if(flights.length > 0){
+            res.status(200).json({
+                message: "Flights Found",
+                flights: flights
+            })
+        } else {
+            res.status(404).json({
+                message: "No Flights Found"
+            })
+        }
     } catch (error) {
         res.status(500).json({
             message: error
@@ -76,37 +89,43 @@ customer.put('/update-flight', async (req, res) => {
     // req.body ={flightNo, newFlightNo, seatNo,newSeatNo}
     try {
         // parsing data received form client
-        const { flightNo, newFlightNo, seatNo, newSeatNo, reservationId } = req.body
+        const { reservationId, flightNo, newFlightNo, seatNo, newSeatNo } = req.body
+        console.log(flightNo, seatNo)
         
         // updating Seats
-        const currentSeat = await Seat.findOne({flightnumber: flightNo, seatnumber: seatNo})
+        const currentSeat = await Seat.findOne({flightNumber: flightNo, seatnumber: seatNo})
+        console.log(currentSeat)
         currentSeat.available = true
-        currentSeat.save()
+        await currentSeat.save()
 
-        const newSeat = await Seat.findOne({flightnumber: newFlightNo, seatnumber: newSeatNo})
+        const newSeat = await Seat.findOne({flightNumber: newFlightNo, seatnumber: newSeatNo})
+        console.log(newSeat)
         newSeat.available = false
-        currentSeat.save()
+        await currentSeat.save()
 
         // Updating Flights
-        const currentFlight = await Flight.findOne({ flightNumber: flightNo})
+        const currentFlight = await Flight.findById(flightNo)
+        console.log(currentFlight)
         currentFlight.totalSeats = currentFlight.totalSeats + 1
-        currentFlight.save()
+        await currentFlight.save()
 
-        const newFlight = await Flight.findOne({flightNumber: newFlightNo })
+        const newFlight = await Flight.findById(newflightNo)
+        console.log(newFlight)
         newFlight.totalSeats = currentFlight.totalSeats - 1
-        newFlight.save()
+        await newFlight.save()
 
         // updating Reservation
         const reservation = await Reservation.findById(reservationId)
+        console.log(reservation)
         reservation.flightNumber = newFlightNo
         reservation.seatNumber = newSeatNo
-        reservation.save()
+        await reservation.save()
 
         res.status(200).json({
             message: 'Flight updated',
-            updatedFlight: newFlight,
-            updatedSeat: newSeat,
-            updatedRes: reservation
+            // updatedFlight: newFlight,
+            // updatedSeat: newSeat,
+            // updatedRes: reservation
         })
     } catch (error) {
         res.status(500).json({
@@ -128,6 +147,5 @@ customer.delete('/cancellation', async (req, res) => {
     }
 })
 
-// export module
 
 module.exports = customer;
