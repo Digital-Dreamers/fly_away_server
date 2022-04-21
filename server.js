@@ -1,7 +1,7 @@
 // Import Dependencies
 const express = require('express')
 const app = express()
-var cors = require('cors')
+const cors = require('cors')
 require('dotenv').config()
 const portNumber = process.env.PORT
 
