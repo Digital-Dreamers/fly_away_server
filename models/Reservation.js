@@ -17,7 +17,5 @@ const reservationSchema = new mongoose.Schema({
   },
 })
 
-const ID = mongoose.Schema.Types.ObjectId
-
 const Reservation = mongoose.model('Reservation', reservationSchema)
 module.exports = Reservation
