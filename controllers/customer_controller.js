@@ -5,38 +5,40 @@ const { Flight, Passenger, Reservation, Seat } = db
 
 // Search Flights GET
 customer.get('/search', async (req, res) => {
-    try {
-        const { departure, destination, departureDate, numberOfSeat } = req.body
+  try {
+    const { departure, destination, departureDate, numberOfSeat } = req.query
 
-        const flights = await Flight.find({
-            departure,
-            destination,
-            departureDate,
-        }).where('totalSeats').gte(numberOfSeat)
+    const flights = await Flight.find({
+      departure,
+      destination,
+      departureDate,
+    })
+      .where('totalSeats')
+      .gte(numberOfSeat)
 
-        if (flights.length > 0) {
-            res.status(200).json({
-                message: "Flights Found",
-                flights: flights
-            })
-        } else {
-            res.status(404).json({
-                message: "No Flights Found"
-            })
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: error
-        })
+    if (flights.length > 0) {
+      res.status(200).json({
+        message: 'Flights Found',
+        flights: flights,
+      })
+    } else {
+      res.status(404).json({
+        message: 'No Flights Found',
+      })
     }
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
 })
 
 // Book Flights POST
 customer.post('/book', async (req, res) => {
   const { firstName, lastName, age, address, city, state, reservationNumber } =
     req.body
-  const { flightNumber, seatNumber, passenger } = req.body
-  const { Passenger, Reservation } = db
+  const { flightNumberId, seatNumberId, passengerId } = req.body
+
   if (
     !firstName ||
     !lastName ||
@@ -45,8 +47,8 @@ customer.post('/book', async (req, res) => {
     !city ||
     !state ||
     !reservationNumber ||
-    !flightNumber ||
-    !seatNumber
+    !flightNumberId ||
+    !seatNumberId
   ) {
     res.status(400)
     throw new Error('Please add all fields')
@@ -62,12 +64,10 @@ customer.post('/book', async (req, res) => {
       reservationNumber,
     })
 
-    console.log(passengerInfo._id.toString())
-
     const reservation = await Reservation.create({
-      flightNumber,
-      seatNumber,
-      passenger: passengerInfo._id.toString(),
+      flightNumberId,
+      seatNumberId,
+      passengerId: passengerInfo._id.toString(),
     })
 
     res.status(200).json({ passengerInfo, reservation })
@@ -80,15 +80,26 @@ customer.post('/book', async (req, res) => {
 
 // Update Records and flights all affect reservation Model
 // reservation info GET req.
-customer.get('/reservations/:id', async (req, res) => {
-  const { Reservation } = db
+customer.get('/reservations/:reservationId', async (req, res) => {
+  const checkForReservation = await Reservation.findById(
+    req.params.reservationId
+  )
+
+  if (!checkForReservation) {
+    return res
+      .status(400)
+      .json({ Message: `Reservation ${req.params.reservationId} Not Found` })
+  }
   try {
-    const reservation = await Reservation.findById(req.params.id).populate([
+    const reservation = await Reservation.findById(
+      req.params.reservationId
+    ).populate([
       { path: 'passenger', model: 'Passenger' },
-      { path: 'seatNumber', model: 'Seat' },
-      { path: 'flightNumber', model: 'Flight' },
+      { path: 'flightNumberId', model: 'Flight' },
+      //   { path: "totalSeats", model: "Flight" },
     ])
-    res.status(200).json(reservation)
+
+    res.status(201).json(reservation)
   } catch (error) {
     res.status(500).json({
       message: error,
@@ -98,8 +109,6 @@ customer.get('/reservations/:id', async (req, res) => {
 
 // Handles passenger information update
 customer.put('/update-passenger/:id', async (req, res) => {
-  const { Passenger } = db
-
   const passenger = await Passenger.findById(req.params.id)
   if (!passenger) {
     res.status(400)
@@ -123,18 +132,36 @@ customer.put('/update-passenger/:id', async (req, res) => {
 })
 
 // Handles seat information update
-customer.put('/update-seat', async (req, res) => {
-  try {
-    res.status(200).json({
-      message: 'Seat updated',
-      updatedFlight: 'Updated seat object',
-    })
-  } catch (error) {
-    res.status(500).json({
-      message: error,
-    })
+customer.put(
+  '/update-seat/:flightId/:currentSeatId/:newSeatId',
+  async (req, res) => {
+    const flight = await Flight.findById(req.params.flightId)
+
+    currentSeat_id = req.params.currentSeatId
+    flight_id = req.params.flightId
+    console.log(currentSeat_id)
+    console.log(flight_id)
+    try {
+      Flight.updateOne(
+        {
+          _id: ObjectId('6261f984fb80bd3ada64aa0b'),
+          'seat._id': '6261f984fb80bd3ada64aa0e',
+        },
+
+        { $set: { 'seat.$.number': '1A' } }
+      )
+
+      res.status(200).json({
+        message: 'Seat updated',
+        updatedFlight: 'Updated seat object',
+      })
+    } catch (error) {
+      res.status(500).json({
+        message: error,
+      })
+    }
   }
-})
+)
 
 // Handles flight information update
 customer.put('/update-flight', async (req, res) => {
@@ -151,17 +178,27 @@ customer.put('/update-flight', async (req, res) => {
 })
 
 // Cancel Flights DELETE(reservation) PUT(Seat)
-customer.delete('/cancellation', async (req, res) => {
-  try {
-    res.status(200).json({
-      message: 'Flight Canceled',
-    })
-  } catch (error) {
-    res.status(500).json({
-      message: error,
-    })
+customer.delete(
+  '/reservations/cancellation/:reservationId/:passengerId',
+  async (req, res) => {
+    const reservation = await Reservation.findById(req.params.reservationId)
+    const passenger = await Passenger.findById(req.params.passengerId)
+    if (!reservation) {
+      return res.status(400).json('Reservation not found')
+    }
+    if (!passenger) {
+      return res.status(400).json('Passenger not found')
+    }
+    try {
+      await reservation.deleteOne()
+      await passenger.deleteOne()
+      res.status(200).json(`Reservation ${reservation._id.toString()} Deleted`)
+    } catch (error) {
+      res.status(500).json({
+        message: 'Reservation Not Deleted',
+      })
+    }
   }
-})
-
+)
 
 module.exports = customer
