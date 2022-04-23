@@ -7,11 +7,12 @@ const portNumber = process.env.PORT
 
 // Middleware
 const corsOptions = {
-  origin: '*',
+  origin: '*'
 }
 app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+
 
 // Controllers
 app.use('/admin', require('./controllers/admin_controller'))
