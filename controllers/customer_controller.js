@@ -167,10 +167,47 @@ customer.put(
 // Handles flight information update
 customer.put('/update-flight', async (req, res) => {
   try {
+    console.log('PUT request on update-flight')
+    
+    const { reservationId, flightId, seatId, newFlightId, newSeatId } = req.body
+    //getting current flight and updating
+    const currentFlight = await Flight.findById(flightId)
+    currentFlight.totalSeats =  currentFlight.totalSeats + 1
+    await currentFlight.save()
+
+    // // get newFlight and update its seat
+    const newFlight = await Flight.findById(newFlightId)
+    newFlight.totalSeats = newFlight.totalSeats - 1
+    await newFlight.save()
+
+    // get and Update current Seat
+    // const currentSeat = await Flight.seat.pull(seatId)
+    // console.log(currentSeat)
+    // currentSeat.available = true
+    // await currentSeat.save()
+
+    // // get and update new seat
+    // const newSeat = await Flight.seat.id(newSeatId)
+    // console.log(newSeat)
+    // newSeat.available = false
+    // await newSeat.save()
+    
+
+    // get reservation and update
+    const reservation = await Reservation.findById(reservationId)
+    reservation.flightNumberId = newFlightId
+    reservation.seatNumber = newSeatId
+    await reservation.save()
+
+    // ,{"flightNumberId": newFlightId, "seatNumber": newSeatId}
+
+    console.log('PUT Completed')
+
     res.status(200).json({
       message: 'Flight updated',
-      updatedFlight: 'Updated flight object',
+      updatedReservation: reservation,
     })
+
   } catch (error) {
     res.status(500).json({
       message: error,
