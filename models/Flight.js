@@ -39,6 +39,12 @@ const flightSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    seat: [
+        {
+            number: String,
+            available: Boolean
+        }
+    ]
 })
 
 // Export flight model
