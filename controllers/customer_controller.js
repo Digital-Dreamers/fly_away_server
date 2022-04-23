@@ -6,13 +6,13 @@ const { Flight, Passenger, Reservation, Seat } = db
 // Search Flights GET
 customer.get('/search', async (req, res) => {
     try {
-        const { departure, destination, departureDate } = req.body
+        const { departure, destination, departureDate } = req.query
 
         const flights = await Flight.find({
             departure,
             destination,
             departureDate,
-        }).where('totalSeats').gte(numberOfSeats)
+        }).where('departureDate').equals(departureDate)
 
         if (flights.length > 0) {
             res.status(200).json({
@@ -81,7 +81,7 @@ customer.post('/book', async (req, res) => {
 // Update Records and flights all affect reservation Model
 // reservation info GET req.
 customer.get('/reservations/:id', async (req, res) => {
-  const { Reservation } = db
+  
   try {
     const reservation = await Reservation.findById(req.params.id).populate([
       { path: 'passenger', model: 'Passenger' },

@@ -14,3 +14,4 @@ mongoose.connect(process.env.MONGO_URI, {
 module.exports.Passenger = require('./Passenger')
 module.exports.Reservation = require('./Reservation')
 module.exports.Flight = require('./Flight')
+module.exports.Seat = require('./Seat')

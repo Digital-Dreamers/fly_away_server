@@ -1,16 +1,16 @@
 const mongoose = require('mongoose')
 const reservationSchema = new mongoose.Schema({
-  flightNumber: {
+  flightNumberId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Flight',
     required: true,
   },
-  seatNumber: {
+  seatNumberId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Seat',
     required: true,
   },
-  passenger: {
+  passengerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Passenger',
     required: true,
