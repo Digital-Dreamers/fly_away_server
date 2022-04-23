@@ -1,10 +1,15 @@
 // Import Dependencies
 const express = require('express')
 const app = express()
+const cors = require('cors')
 require('dotenv').config()
 const portNumber = process.env.PORT
 
 // Middleware
+const corsOptions = {
+  origin: '*',
+}
+app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
