@@ -7,7 +7,7 @@ const reservationSchema = new mongoose.Schema({
   },
   seatNumberId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Seat',
+    ref: 'Flight',
     required: true,
   },
   passengerId: {
@@ -16,8 +16,6 @@ const reservationSchema = new mongoose.Schema({
     required: true,
   },
 })
-
-const ID = mongoose.Schema.Types.ObjectId
 
 const Reservation = mongoose.model('Reservation', reservationSchema)
 module.exports = Reservation
