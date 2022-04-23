@@ -132,6 +132,7 @@ customer.put('/update-passenger/:id', async (req, res) => {
 })
 
 // Handles seat information update
+
 customer.put(
   '/update-seat/:flightId/:currentSeatId/:newSeatId',
   async (req, res) => {
