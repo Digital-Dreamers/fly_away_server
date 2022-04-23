@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 // Flight schema
 const flightSchema = new mongoose.Schema({
-    flightNumberId: {
+    flightNumber: {
         type: String,
         required: true
     },

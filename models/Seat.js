@@ -17,3 +17,8 @@ const seatSchema = new mongoose.Schema({
       required: false,
     },
   })
+
+  // Export flight model
+const Seat = mongoose.model('Seat', seatSchema)
+
+module.exports = Seat

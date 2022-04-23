@@ -20,7 +20,7 @@ const seedFlights = [
         arrivalTime: '07:56',
         totalSeats: 8,
         seatPrice: 150,
-        seat: [
+        seat: [ 
             {
                 number: '1A',
                 available: false
