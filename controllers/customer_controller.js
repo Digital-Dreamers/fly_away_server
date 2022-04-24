@@ -130,54 +130,11 @@ customer.put('/update-passenger/:id', async (req, res) => {
 })
 
 // Handles seat information update
-
-customer.put(
-  '/update-seat/:flightId/:currentSeatId/:newSeatId',
-  async (req, res) => {
-    const flight = await Flight.findById(req.params.flightId)
-
-    currentSeat_id = req.params.currentSeatId
-    flight_id = req.params.flightId
-    console.log(currentSeat_id)
-    console.log(flight_id)
-    try {
-      Flight.updateOne(
-        {
-          _id: ObjectId('6261f984fb80bd3ada64aa0b'),
-          'seat._id': '6261f984fb80bd3ada64aa0e',
-        },
-
-        { $set: { 'seat.$.number': '1A' } }
-      )
-
-      res.status(200).json({
-        message: 'Seat updated',
-        updatedFlight: 'Updated seat object',
-      })
-    } catch (error) {
-      res.status(500).json({
-        message: error,
-      })
-    }
-  }
-)
-
-// Handles flight information update
-customer.put('/update-flight', async (req, res) => {
+customer.put('/update-seat', async (req, res) => {
   try {
     console.log('PUT request on update-flight')
     
-    const { reservationId, flightId, seatId, newFlightId, newSeatId } = req.body
-    //getting current flight and updating
-    const currentFlight = await Flight.findById(flightId)
-    currentFlight.totalSeats =  currentFlight.totalSeats + 1
-    await currentFlight.save()
-
-    // // get newFlight and update its seat
-    const newFlight = await Flight.findById(newFlightId)
-    newFlight.totalSeats = newFlight.totalSeats - 1
-    await newFlight.save()
-
+    const { reservationId, seatId, newSeatId } = req.body
     // get and Update current Seat
     const currentSeat = await Seat.findById(seatId)
     currentSeat.available = true
@@ -187,13 +144,11 @@ customer.put('/update-flight', async (req, res) => {
     const newSeat = await Seat.findById(newSeatId)
     newSeat.available = false
     await newSeat.save()
-    console.log(newSeat)
     
 
     // get reservation and update
     const reservation = await Reservation.findById(reservationId)
-    reservation.flightNumberId = newFlightId
-    reservation.seatNumber = newSeatId
+    reservation.seatNumberId = newSeatId
     await reservation.save()
 
     // ,{"flightNumberId": newFlightId, "seatNumber": newSeatId}
