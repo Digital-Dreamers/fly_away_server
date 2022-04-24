@@ -1,5 +1,7 @@
 const express = require('express')
+const db = require('../models')
 const admin = express.Router()
+const { Flight, Passenger, Reservation, Seat } = db
 
 // ALL FLIGHT ROUTES /////////////////////////////////
 
@@ -55,19 +57,17 @@ admin.post('/index', async (req, res) => {
 })
 
 // UPDATE FLIGHT ROUTE
-admin.put('/index/:id', async (req, res) => {
-  // const flight = await findById(req.params.id);
-  // if (!flight) {
-  //   res.status(400);
-  //   throw new Error("Flight not found");
-  // }
-  // const updatedFlight = await flight.findByIdAndUpdate(
-  //   req.params.id,
-  //   req.body,
-  //   {
-  //     new: true,
-  //   }
-  // );
+admin.post('/update-flight/:flightId', async (req, res) => {
+  const updateFlight = await findById(req.params.id).then((flight) => {
+    Seat.create(req.body)
+      .then((seat) => {
+        flight.seat.push(seat.id)
+        flight.save()
+      })
+      .catch((err) => {
+        res.status('error404')
+      })
+  })
 
   res
     .status(201)

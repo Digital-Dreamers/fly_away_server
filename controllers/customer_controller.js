@@ -94,9 +94,9 @@ customer.get('/reservations/:reservationId', async (req, res) => {
     const reservation = await Reservation.findById(
       req.params.reservationId
     ).populate([
-      { path: 'passenger', model: 'Passenger' },
+      { path: 'passengerId', model: 'Passenger' },
       { path: 'flightNumberId', model: 'Flight' },
-      //   { path: "totalSeats", model: "Flight" },
+      { path: 'seatNumberId', model: 'Seat' },
     ])
 
     res.status(201).json(reservation)
@@ -131,31 +131,50 @@ customer.put('/update-passenger/:id', async (req, res) => {
   }
 })
 
-// Handles seat information update
+// Handles **OLD** seat information update
+customer.put('/update-old-seat/:oldSeatId/:newSeatId', async (req, res) => {
+  try {
+    const currentSeat = await Seat.findByIdAndUpdate(
+      req.params.oldSeatId,
+      req.body,
+      {
+        new: true,
+      }
+    )
+    const newSeat = await Seat.findByIdAndUpdate(req.params.newSeatId)
 
+    res.status(200).json([{ currentSeat }, { newSeat }])
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
+// Handles **NEW** seat information update
 customer.put(
-  '/update-seat/:flightId/:currentSeatId/:newSeatId',
+  '/update-new-seat/:newSeatId/:oldSeatId/:reservationId',
   async (req, res) => {
-    const flight = await Flight.findById(req.params.flightId)
-
-    currentSeat_id = req.params.currentSeatId
-    flight_id = req.params.flightId
-    console.log(currentSeat_id)
-    console.log(flight_id)
     try {
-      Flight.updateOne(
+      const newSeat = await Seat.findByIdAndUpdate(
+        req.params.newSeatId,
+        req.body,
         {
-          _id: ObjectId('6261f984fb80bd3ada64aa0b'),
-          'seat._id': '6261f984fb80bd3ada64aa0e',
-        },
-
-        { $set: { 'seat.$.number': '1A' } }
+          new: true,
+        }
       )
 
-      res.status(200).json({
-        message: 'Seat updated',
-        updatedFlight: 'Updated seat object',
-      })
+      const reservationUpdated = await Reservation.findByIdAndUpdate(
+        req.params.reservationId,
+        req.body,
+        {
+          new: true,
+        }
+      )
+
+      const oldSeat = await Seat.findByIdAndUpdate(req.params.oldSeatId)
+
+      res.status(200).json([{ oldSeat }, { newSeat }, { reservationUpdated }])
     } catch (error) {
       res.status(500).json({
         message: error,
@@ -201,5 +220,17 @@ customer.delete(
     }
   }
 )
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/seats', async (req, res) => {
+  try {
+    const seat = await Seat.find()
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
 
 module.exports = customer
