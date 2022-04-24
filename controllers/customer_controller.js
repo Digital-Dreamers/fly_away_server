@@ -233,4 +233,95 @@ customer.get('/search/seats', async (req, res) => {
   }
 })
 
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.put(
+  '/update-reservation-flight/:reservationId/:flightId/:seatId',
+  async (req, res) => {
+    try {
+      // To change the seat to available in the old flight
+      const flightUpdated = await Flight.findByIdAndUpdate(
+        req.params.flightId,
+        req.body,
+        {
+          new: true,
+        }
+      )
+
+      const seatUpdated = await Seat.findByIdAndUpdate(
+        req.params.seatId,
+        req.body,
+        { new: true }
+      )
+
+      //  To update the flight number associated with the reservation
+      //  You can use the body but the name has to match the field in the reservation model exactly flightNumber
+      const reservationUpdated = await Reservation.findByIdAndUpdate(
+        req.params.reservationId,
+        req.body,
+        {
+          new: true,
+        }
+      )
+      //   To change the seat to unavailable in new flight
+      const newFlightInfo = await Flight.findById(req.body.flightNumberId)
+
+      res
+        .status(200)
+        .json([
+          { flightUpdated },
+          { reservationUpdated },
+          { newFlightInfo },
+          { seatUpdated },
+        ])
+    } catch (error) {
+      res.status(500).json({
+        message: error,
+      })
+    }
+  }
+)
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/flights', async (req, res) => {
+  try {
+    const flight = await Flight.find()
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+customer.get('/search/flights/:flightId', async (req, res) => {
+  try {
+    const flight = await Flight.findById(req.params.flightId).populate([
+      { path: 'seats', model: 'Seat' },
+    ])
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.post('/create/seats', async (req, res) => {
+  const { flightNumber, seatNumber, available, seatClass, charge } = req.body
+  try {
+    const seat = await Seat.create({
+      flightNumber,
+      seatNumber,
+      available,
+      seatClass,
+      charge,
+    })
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
 module.exports = customer
