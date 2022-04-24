@@ -6,15 +6,13 @@ const { Flight, Passenger, Reservation, Seat } = db
 // Search Flights GET
 customer.get('/search', async (req, res) => {
   try {
-    const { departure, destination, departureDate, numberOfSeat } = req.query
+    const { departure, destination, departureDate, numberOfSeats } = req.query
 
     const flights = await Flight.find({
       departure,
       destination,
       departureDate,
-    })
-      .where('totalSeats')
-      .gte(numberOfSeat)
+    }).where('totalSeats').gt(numberOfSeats)
 
     if (flights.length > 0) {
       res.status(200).json({
@@ -181,16 +179,15 @@ customer.put('/update-flight', async (req, res) => {
     await newFlight.save()
 
     // get and Update current Seat
-    // const currentSeat = await Flight.seat.pull(seatId)
-    // console.log(currentSeat)
-    // currentSeat.available = true
-    // await currentSeat.save()
+    const currentSeat = await Seat.findById(seatId)
+    currentSeat.available = true
+    await currentSeat.save()
 
     // // get and update new seat
-    // const newSeat = await Flight.seat.id(newSeatId)
-    // console.log(newSeat)
-    // newSeat.available = false
-    // await newSeat.save()
+    const newSeat = await Seat.findById(newSeatId)
+    newSeat.available = false
+    await newSeat.save()
+    console.log(newSeat)
     
 
     // get reservation and update
