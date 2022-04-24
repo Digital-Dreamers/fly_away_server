@@ -6,7 +6,7 @@ const { Flight, Passenger, Reservation, Seat } = db
 // Search Flights GET
 customer.get('/search', async (req, res) => {
   try {
-    const { departure, destination, departureDate, numberOfSeat } = req.query
+    const { departure, destination, departureDate, numberOfSeats } = req.query
 
     const flights = await Flight.find({
       departure,
@@ -14,7 +14,7 @@ customer.get('/search', async (req, res) => {
       departureDate,
     })
       .where('totalSeats')
-      .gte(numberOfSeat)
+      .gt(numberOfSeats)
 
     if (flights.length > 0) {
       res.status(200).json({
@@ -131,12 +131,34 @@ customer.put('/update-passenger/:id', async (req, res) => {
   }
 })
 
-// Handles flight information update
-customer.put('/update-flight', async (req, res) => {
+// Handles seat information update
+customer.put('/update-seat', async (req, res) => {
   try {
+    console.log('PUT request on update-flight')
+
+    const { reservationId, seatId, newSeatId } = req.body
+    // get and Update current Seat
+    const currentSeat = await Seat.findById(seatId)
+    currentSeat.available = true
+    await currentSeat.save()
+
+    // // get and update new seat
+    const newSeat = await Seat.findById(newSeatId)
+    newSeat.available = false
+    await newSeat.save()
+
+    // get reservation and update
+    const reservation = await Reservation.findById(reservationId)
+    reservation.seatNumberId = newSeatId
+    await reservation.save()
+
+    // ,{"flightNumberId": newFlightId, "seatNumber": newSeatId}
+
+    console.log('PUT Completed')
+
     res.status(200).json({
       message: 'Flight updated',
-      updatedFlight: 'Updated flight object',
+      updatedReservation: reservation,
     })
   } catch (error) {
     res.status(500).json({
