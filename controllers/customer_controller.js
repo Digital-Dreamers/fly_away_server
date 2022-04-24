@@ -167,6 +167,26 @@ customer.put('/update-seat', async (req, res) => {
   }
 })
 
+// Handles **OLD** seat information update
+customer.put('/update-old-seat', async (req, res) => {
+  try {
+    const seatStatus = await Seat.findByIdAndUpdate(
+      req.body.oldSeatId,
+      req.body,
+      {
+        new: true,
+      }
+    )
+    //   const newSeat = await Seat.findByIdAndUpdate(req.params.newSeatId)
+
+    res.status(200).json(seatStatus)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
 // Cancel Flights DELETE(reservation) PUT(Seat)
 customer.delete(
   '/reservations/cancellation/:reservationId/:passengerId',
@@ -190,5 +210,17 @@ customer.delete(
     }
   }
 )
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/seats', async (req, res) => {
+  try {
+    const seat = await Seat.find()
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
 
 module.exports = customer
