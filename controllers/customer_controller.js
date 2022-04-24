@@ -6,15 +6,13 @@ const { Flight, Passenger, Reservation, Seat } = db
 // Search Flights GET
 customer.get('/search', async (req, res) => {
   try {
-    const { departure, destination, departureDate, numberOfSeat } = req.query
+    const { departure, destination, departureDate, numberOfSeats } = req.query
 
     const flights = await Flight.find({
       departure,
       destination,
       departureDate,
-    })
-      .where('totalSeats')
-      .gte(numberOfSeat)
+    }).where('totalSeats').gt(numberOfSeats)
 
     if (flights.length > 0) {
       res.status(200).json({
@@ -167,10 +165,46 @@ customer.put(
 // Handles flight information update
 customer.put('/update-flight', async (req, res) => {
   try {
+    console.log('PUT request on update-flight')
+    
+    const { reservationId, flightId, seatId, newFlightId, newSeatId } = req.body
+    //getting current flight and updating
+    const currentFlight = await Flight.findById(flightId)
+    currentFlight.totalSeats =  currentFlight.totalSeats + 1
+    await currentFlight.save()
+
+    // // get newFlight and update its seat
+    const newFlight = await Flight.findById(newFlightId)
+    newFlight.totalSeats = newFlight.totalSeats - 1
+    await newFlight.save()
+
+    // get and Update current Seat
+    const currentSeat = await Seat.findById(seatId)
+    currentSeat.available = true
+    await currentSeat.save()
+
+    // // get and update new seat
+    const newSeat = await Seat.findById(newSeatId)
+    newSeat.available = false
+    await newSeat.save()
+    console.log(newSeat)
+    
+
+    // get reservation and update
+    const reservation = await Reservation.findById(reservationId)
+    reservation.flightNumberId = newFlightId
+    reservation.seatNumber = newSeatId
+    await reservation.save()
+
+    // ,{"flightNumberId": newFlightId, "seatNumber": newSeatId}
+
+    console.log('PUT Completed')
+
     res.status(200).json({
       message: 'Flight updated',
-      updatedFlight: 'Updated flight object',
+      updatedReservation: reservation,
     })
+
   } catch (error) {
     res.status(500).json({
       message: error,
