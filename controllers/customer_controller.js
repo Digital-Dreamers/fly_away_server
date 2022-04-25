@@ -187,7 +187,7 @@ customer.put('/update-old-seat', async (req, res) => {
   }
 })
 
-// Cancel Flights DELETE(reservation) PUT(Seat)
+// Cancel Flights DELETE(reservation)
 customer.delete(
   '/reservations/cancellation/:reservationId/:passengerId',
   async (req, res) => {
