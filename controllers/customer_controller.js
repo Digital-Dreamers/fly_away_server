@@ -46,7 +46,6 @@ customer.post('/book', async (req, res) => {
     !address ||
     !city ||
     !state ||
-    !reservationNumber ||
     !flightNumberId ||
     !seatNumberId
   ) {
@@ -100,6 +99,22 @@ customer.get('/reservations/:reservationId', async (req, res) => {
     ])
 
     res.status(201).json(reservation)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
+// Get all available seats
+customer.get('/search/flight/available-seats/:flightId', async (req, res) => {
+  //   const { flightId } = req.body
+  //   console.log(flightId)
+  try {
+    const flight = await Flight.findById(req.params.flightId).populate([
+      { path: 'seats', model: 'Seat' },
+    ])
+    res.status(200).json(flight)
   } catch (error) {
     res.status(500).json({
       message: error,
@@ -187,7 +202,7 @@ customer.put('/update-old-seat', async (req, res) => {
   }
 })
 
-// Cancel Flights DELETE(reservation) PUT(Seat)
+// Cancel Flights DELETE(reservation)
 customer.delete(
   '/reservations/cancellation/:reservationId/:passengerId',
   async (req, res) => {
@@ -211,4 +226,26 @@ customer.delete(
   }
 )
 
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/seats', async (req, res) => {
+  try {
+    const seat = await Seat.find()
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+// REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/seats/:id', async (req, res) => {
+  try {
+    const seat = await Seat.findById(req.params.id)
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
 module.exports = customer
