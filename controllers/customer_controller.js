@@ -211,16 +211,4 @@ customer.delete(
   }
 )
 
-// REMOVE AFTER TESTING !!!!!!!!!!!
-customer.get('/search/seats', async (req, res) => {
-  try {
-    const seat = await Seat.find()
-    res.status(200).json(seat)
-  } catch (error) {
-    res.status(500).json({
-      message: error,
-    })
-  }
-})
-
 module.exports = customer
