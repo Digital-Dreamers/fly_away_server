@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Flight = require('../Models/Flight')
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://admin:admin@cluster0.mgprw.mongodb.net/MILESTONE_PROJECT_2?retryWrites=true&w=majority', { 
+mongoose.connect(MONGO_URI, { 
     useNewUrlParser: true, 
     useUnifiedTopology: true 
 })
