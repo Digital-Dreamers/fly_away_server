@@ -14,7 +14,7 @@ customer.get('/search', async (req, res) => {
       departureDate,
     })
       .where('totalSeats')
-      .gt(numberOfSeats)
+      .gte(numberOfSeats)
 
     if (flights.length > 0) {
       res.status(200).json({
