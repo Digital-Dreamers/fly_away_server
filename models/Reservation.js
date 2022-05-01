@@ -5,16 +5,20 @@ const reservationSchema = new mongoose.Schema({
     ref: 'Flight',
     required: true,
   },
-  seatNumberId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Seat',
-    required: true,
-  },
-  passengerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Passenger',
-    required: true,
-  },
+  seatNumberId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Seat',
+      required: true,
+    },
+  ],
+  passengerId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Passenger',
+      required: true,
+    },
+  ],
 })
 
 const Reservation = mongoose.model('Reservation', reservationSchema)
