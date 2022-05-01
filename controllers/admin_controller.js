@@ -6,10 +6,25 @@ const { Flight, Passenger, Reservation, Seat } = db
 // ALL FLIGHT ROUTES /////////////////////////////////
 
 // GET ROUTE FOR ALL FLIGHTS
-admin.get('/index', async (req, res) => {
-  // const flights = await Flight.find()
-  // res.status(201).json(flights)
-  res.status(201).json({ message: 'Got Flights' })
+admin.get('/search/flights', async (req, res) => {
+  try {
+    const flight = await Flight.find()
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+admin.get('/search/passengers', async (req, res) => {
+  try {
+    const flight = await Passenger.find()
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
 })
 
 // CREATE A SINGLE FLIGHT ROUTE
@@ -101,21 +116,22 @@ admin.get('/seats/:id', async (req, res) => {
 })
 
 // CREATE A SEAT ROUTE
-admin.post('/seats', async (req, res) => {
-  // const { flightNumber, seatNumber, available, seatclass, charge } = req.body
-  // if (!flightNumber || !seatNumber || !available) res.status(400)
-  // throw new Error('Please add all fields')
-  // const newSeat = await Seat.create({
-  //   flightNumber,
-  //   seatNumber,
-  //   available,
-  //   seatclass,
-  //   charge,
-  //   flightnumber: req.flight.id,
-  // })
-  // res.status(201).json(newSeat)
 
-  res.status(201).json({ message: 'New seat created' })
+admin.post('/create/seats', async (req, res) => {
+  const { seatNumber, available, seatClass, charge } = req.body
+  try {
+    const seat = await Seat.create({
+      seatNumber,
+      available,
+      seatClass,
+      charge,
+    })
+    res.status(200).json(seat)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
 })
 
 // UPDATE SEATS ROUTE
@@ -144,5 +160,31 @@ admin.delete('/seats/:id', async (req, res) => {
   // res.status(201).json({ id: req.params.id });
 
   res.status(201).json({ message: `Seat number ${req.params.id} was deleted` })
+})
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+admin.delete('/passengers', async (req, res) => {
+  try {
+    const passengers = await Passenger.deleteMany()
+    res.status(200).json(passengers)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
+admin.delete('/delete-reservation/:reservationId', async (req, res) => {
+  try {
+    const reservation = await Reservation.findByIdAndDelete(
+      req.params.reservationId
+    )
+    res.status(200).json(reservation)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
 })
 module.exports = admin

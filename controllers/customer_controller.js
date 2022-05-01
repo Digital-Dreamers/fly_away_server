@@ -35,46 +35,29 @@ customer.get('/search', async (req, res) => {
 
 // Book Flights POST
 customer.post('/book', async (req, res) => {
-  const { firstName, lastName, age, address, city, state, reservationNumber } =
-    req.body
-  const { flightNumberId, seatNumberId, passengerId } = req.body
-
-  if (
-    !firstName ||
-    !lastName ||
-    !age ||
-    !address ||
-    !city ||
-    !state ||
-    !flightNumberId ||
-    !seatNumberId
-  ) {
-    res.status(400)
-    throw new Error('Please add all fields')
+  const createManyDocuments = async () => {
+    try {
+      const { flightNumberId } = req.body[0]
+      const passengerInfo = await Passenger.create(req.body)
+      return { flightNumberId, passengerInfo }
+    } catch (error) {
+      res.status(400).json({
+        message: error,
+      })
+    }
   }
-  try {
-    const passengerInfo = await Passenger.create({
-      firstName,
-      lastName,
-      age,
-      address,
-      city,
-      state,
-      reservationNumber,
-    })
+  const many = await createManyDocuments()
 
-    const reservation = await Reservation.create({
-      flightNumberId,
-      seatNumberId,
-      passengerId: passengerInfo._id.toString(),
-    })
+  const reservation = await Reservation.create({
+    flightNumberId: many.flightNumberId,
+    seatNumberId: [req.body[0].seatNumberId, req.body[1].seatNumberId],
+    passengerId: [
+      many.passengerInfo[0]._id.toString(),
+      many.passengerInfo[1]._id.toString(),
+    ],
+  })
 
-    res.status(200).json({ passengerInfo, reservation })
-  } catch (error) {
-    res.status(500).json({
-      message: error,
-    })
-  }
+  res.status(200).json({ many, reservation })
 })
 
 // Update Records and flights all affect reservation Model
@@ -84,11 +67,6 @@ customer.get('/reservations/:reservationId', async (req, res) => {
     req.params.reservationId
   )
 
-  if (!checkForReservation) {
-    return res
-      .status(400)
-      .json({ Message: `Reservation ${req.params.reservationId} Not Found` })
-  }
   try {
     const reservation = await Reservation.findById(
       req.params.reservationId
@@ -108,8 +86,6 @@ customer.get('/reservations/:reservationId', async (req, res) => {
 
 // Get all available seats
 customer.get('/search/flight/available-seats/:flightId', async (req, res) => {
-  //   const { flightId } = req.body
-  //   console.log(flightId)
   try {
     const flight = await Flight.findById(req.params.flightId).populate([
       { path: 'seats', model: 'Seat' },
@@ -185,16 +161,16 @@ customer.put('/update-seat', async (req, res) => {
 // Handles **OLD** seat information update
 customer.put('/update-old-seat', async (req, res) => {
   try {
-    const seatStatus = await Seat.findByIdAndUpdate(
-      req.body.oldSeatId,
-      req.body,
-      {
-        new: true,
-      }
+    const seatStatusOne = await Seat.findByIdAndUpdate(
+      req.body.oldSeatId[0],
+      req.body
     )
-    //   const newSeat = await Seat.findByIdAndUpdate(req.params.newSeatId)
+    const seatStatusTwo = await Seat.findByIdAndUpdate(
+      req.body.oldSeatId[1],
+      req.body
+    )
 
-    res.status(200).json(seatStatus)
+    res.status(200).json({ message: 'Updated' })
   } catch (error) {
     res.status(500).json({
       message: error,
@@ -227,6 +203,18 @@ customer.delete(
 )
 
 // REMOVE AFTER TESTING !!!!!!!!!!!
+customer.get('/search/flights', async (req, res) => {
+  try {
+    const flight = await Flight.find()
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    })
+  }
+})
+
+// REMOVE AFTER TESTING !!!!!!!!!!!
 customer.get('/search/seats', async (req, res) => {
   try {
     const seat = await Seat.find()
@@ -248,4 +236,5 @@ customer.get('/search/seats/:id', async (req, res) => {
     })
   }
 })
+
 module.exports = customer
