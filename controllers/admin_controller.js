@@ -11,7 +11,7 @@ admin.get('/search/flights', async (req, res) => {
     const flight = await Flight.find()
     res.status(200).json(flight)
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       message: error,
     })
   }
@@ -21,7 +21,17 @@ admin.get('/search/passengers', async (req, res) => {
     const flight = await Passenger.find()
     res.status(200).json(flight)
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
+      message: error,
+    })
+  }
+})
+admin.get('/search/reservations', async (req, res) => {
+  try {
+    const flight = await Reservation.find()
+    res.status(200).json(flight)
+  } catch (error) {
+    res.status(400).json({
       message: error,
     })
   }
