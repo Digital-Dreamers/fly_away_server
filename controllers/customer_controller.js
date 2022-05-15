@@ -1,5 +1,4 @@
 const customer = require('express').Router()
-const getPassengerId = require('../utility/utilityFunctions')
 const db = require('../models')
 const { Flight, Passenger, Reservation, Seat } = db
 
@@ -112,8 +111,8 @@ customer.get('/search/flight/available-seats/:flightId', async (req, res) => {
 })
 
 // Handles passenger information update
-customer.put('/update-passenger/:id', async (req, res) => {
-  const passenger = await Passenger.findById(req.params.id)
+customer.put('/update-passenger/:passengerId', async (req, res) => {
+  const passenger = await Passenger.findById(req.params.passengerId)
   if (!passenger) {
     res.status(400)
     throw new Error('Passenger not found')
@@ -121,7 +120,7 @@ customer.put('/update-passenger/:id', async (req, res) => {
 
   try {
     const updateCustomerInfo = await Passenger.findByIdAndUpdate(
-      req.params.id,
+      req.params.passengerId,
       req.body,
       {
         new: true,
